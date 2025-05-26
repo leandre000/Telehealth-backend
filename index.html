@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket.IO Visual Tester</title>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+  <h2>Socket.IO Visual Tester</h2>
+  <button onclick="joinCall()">Join Call</button>
+  <button onclick="sendOffer()">Send Offer</button>
+  <button onclick="sendAnswer()">Send Answer</button>
+  <button onclick="sendIce()">Send ICE</button>
+  <pre id="log"></pre>
+  <script>
+    const socket = io("http://localhost:5000");
+    const ROOM_ID = "test-room-123";
+    const log = (msg) => {
+      document.getElementById('log').textContent += msg + '\\n';
+    };
+
+    socket.on("connect", () => log("Connected as " + socket.id));
+    socket.on("offer", data => log("Received offer: " + JSON.stringify(data)));
+    socket.on("answer", data => log("Received answer: " + JSON.stringify(data)));
+    socket.on("ice-candidate", data => log("Received ICE: " + JSON.stringify(data)));
+
+    function joinCall() {
+      socket.emit("join-call", ROOM_ID);
+      log("Joined call: " + ROOM_ID);
+    }
+    function sendOffer() {
+      socket.emit("offer", { roomId: ROOM_ID, sdp: "fake-offer-sdp" });
+      log("Sent offer");
+    }
+    function sendAnswer() {
+      socket.emit("answer", { roomId: ROOM_ID, sdp: "fake-answer-sdp" });
+      log("Sent answer");
+    }
+    function sendIce() {
+      socket.emit("ice-candidate", { roomId: ROOM_ID, candidate: "fake-candidate" });
+      log("Sent ICE candidate");
+    }
+  </script>
+</body>
+</html>
